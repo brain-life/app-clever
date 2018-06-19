@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l nodes=1:ppn=8,walltime=15:00:00
+#PBS -l nodes=1:ppn=8,vmem=16gb,walltime=15:00:00
 #PBS -N ensembletracking
 #PBS -V
 
@@ -7,6 +7,7 @@
 set -e
 
 bold=$(jq -r '.bold' config.json)
+mask=$(jq -r '.mask' config.json)
 
-time singularity exec -e docker://brainlife/clever:1.0 Rscript main.R $bold
+time singularity exec -e docker://brainlife/clever:1.0 Rscript main.R $bold $mask
 
