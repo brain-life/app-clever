@@ -1,0 +1,4 @@
+{
+"bold": "somewhere/bold.nii.gz",
+"mask": "somewhere/mask.nii.gz"
+}
