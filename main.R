@@ -27,24 +27,31 @@ clev <- do.call(clever, append(list(Dat), params.clever))
 # Save results...
 print('saving results...')
 ## Use default options if unspecified.
-if(is.null(opts$out_dir)){ opts$out_dir <- getwd() }
+cwd = getwd()
+if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
+if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
+setwd(opts$out_dir)
 fname <- basename(input$mask)
 for(ext in c('\\.gz$', '\\.nii$', '\\.hdr$', '\\.img$')){
 	fname <- sub(ext, '', fname)
 }
 if(is.null(opts$csv)){ opts.csv <- fname }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
-if(is.null(opts$csv)){ opts.csv <- fname }
+if(is.null(opts$png)){ opts.png <- fname }
 if(!endsWith('.png', opts$png)){ opts$png <- paste0(opts$png, '.png') }
 
-## Save to png.
-plt <- do.call(plot, append(list(clev), params.plot))
-ggsave(filename = opts$png, plot=plt)
+if(params.clever$id_out){
+	## Save to png.
+	plt <- do.call(plot, append(list(clev), params.plot))
+	ggsave(filename = opts$png, plot=plt)
 
-## Save to csv.
-table <- clever_to_table(clev)
-write.csv(table, file=opts$csv, row.names=FALSE)
+	## Save to csv.
+	table <- clever_to_table(clev)
+	write.csv(table, file=opts$csv, row.names=FALSE)
+}
 
 ## Write the JSON file.
 root = clever_to_json(clev, params.plot)
 write(toJSON(root), "product.json")
+
+setwd(cwd)
