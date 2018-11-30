@@ -4,7 +4,7 @@ MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
 RUN apt update && apt install -y r-cran-devtools libssl-dev
 
-RUN R -e 'devtools::install_github("mandymejia/clever")'
+RUN R -e 'devtools::install_github("mandymejia/clever")' #1.1
 
 #to test 
 #R -e 'library("clever"); help("clever")'
