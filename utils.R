@@ -18,6 +18,7 @@ vectorize_NIftI = function(bold, mask){
 # Creates a new file name from an existing one. Used to avoid duplicate names. 
 generate_fname = function(existing_fname){
 	last_period_index <- regexpr("\\.[^\\.]*$", existing_fname)
+	if(last_period_index == -1){ warning('Not a file name (no extension).') }
 	extension <- substr(existing_fname, last_period_index, nchar(existing_fname))
 	## If parenthesized number suffix exists...
 	if(substr(existing_fname, last_period_index-1, last_period_index-1) == ')'){
