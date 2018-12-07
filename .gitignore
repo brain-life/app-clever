@@ -2,3 +2,4 @@ data
 *.gz
 .Rhistory
 config.json
+testdata
