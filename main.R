@@ -1,9 +1,14 @@
 # Load required packages, installing if needed.
-pkg <- c('oro.nifti', 'rjson', 'clever', 'ggplot2')
-pkg.new <- pkg[!(pkg %in% installed.packages()[,'Package'])] #or from github?
-if(length(pkg.new)){ install.packages(pkg.new) }
-lapply(pkg, require, character.only = TRUE)
-rm(pkg, pkg.new)
+#pkg <- c('oro.nifti', 'rjson', 'clever', 'ggplot2')
+#pkg.new <- pkg[!(pkg %in% installed.packages()[,'Package'])] #or from github?
+#if(length(pkg.new)){ install.packages(pkg.new) }
+#lapply(pkg, require, character.only = TRUE)
+#rm(pkg, pkg.new)
+
+library(oro.nifti)
+library(rjson)
+library(clever)
+library(ggplot2)
 
 source('utils.R')
 
