@@ -46,10 +46,16 @@ if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 if(params.clever$id_out){
 	## Save to png.
 	plt <- do.call(plot, append(list(clev), params.plot))
+	if(dirname(opts$png) != '.'){ 
+		if(!dir.exists(dirname(opts$png))){dir.create(dirname(opts$png))}
+	}
 	ggsave(filename = opts$png, plot=plt)
 
 	## Save to csv.
 	table <- clever_to_table(clev)
+	if(dirname(opts$csv) != '.'){ 
+		if(!dir.exists(dirname(opts$csv))){dir.create(dirname(opts$csv))}
+	}
 	write.csv(table, file=opts$csv, row.names=FALSE)
 }
 

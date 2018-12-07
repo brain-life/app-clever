@@ -13,4 +13,3 @@ RUN apt install -y jq
 
 #make it work under singularity
 RUN ldconfig && mkdir -p /N/u /N/home /N/dc2 /N/soft
-
