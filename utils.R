@@ -1,7 +1,7 @@
 # Represents NIfTI volume timeseries as matrix.
 vectorize_NIftI = function(bold, mask){
-	dat <- readNIfTI(bold)
-	mask <- readNIfTI(mask)
+	dat <- readNIfTI(bold, reorient=FALSE)
+	mask <- readNIfTI(mask, reorient=FALSE)
 	mask <- 1*(mask > 0)
 	T <- dim(dat)[4]
 	V <- sum(mask)

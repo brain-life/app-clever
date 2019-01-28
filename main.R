@@ -10,8 +10,6 @@ library(rjson)
 library(clever)
 library(ggplot2)
 
-source('utils.R')
-
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
 if(input$id_out != ''){ input$id_out <- as.logical(input$id_out) }
