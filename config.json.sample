@@ -1,0 +1,14 @@
+{
+    "bold": "testdata/small/bold.nii.gz",
+    "mask": "testdata/small/mask.nii.gz",
+    "choose_PCs": "mean",
+    "method": "leverage",
+    "id_out": "TRUE",
+    "main": "",
+    "sub": "",
+    "xlab": "",
+    "ylab": "",
+    "out_dir": "",
+    "csv": "",
+    "png": ""
+}
