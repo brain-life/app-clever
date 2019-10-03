@@ -3,3 +3,7 @@ data
 .Rhistory
 config.json
 testdata
+product.json
+*.csv
+*.pdf
+*.png

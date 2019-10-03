@@ -41,10 +41,10 @@ for(ext in c('\\.gz$', '\\.nii$', '\\.hdr$', '\\.img$')){
 	fname <- sub(ext, '', fname)
 }
 
-if(is.null(opts$csv)){ opts.csv <- fname }
+if(is.null(opts$csv)){ opts$csv <- fname }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
 if(file.exists(opts$csv)){ opts$csv <- generate_fname(opts$csv) }
-if(is.null(opts$png)){ opts.png <- fname }
+if(is.null(opts$png)){ opts$png <- fname }
 if(!endsWith('.png', opts$png)){ opts$png <- paste0(opts$png, '.png') }
 if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 
