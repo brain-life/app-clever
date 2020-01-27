@@ -32,7 +32,7 @@ clev <- do.call(clever, append(list(Dat), params.clever))
 # Save results...
 print('saving results...')
 ## Use default options if unspecified.
-cwd = getwd()
+cwd <- getwd()
 if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
 if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
 setwd(opts$out_dir)
@@ -51,21 +51,21 @@ if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 if(params.clever$id_out){
 	## Save to png.
 	plt <- do.call(plot, append(list(clev), params.plot))
-	if(dirname(opts$png) != '.'){ 
+	if(dirname(opts$png) != '.'){
 		if(!dir.exists(dirname(opts$png))){dir.create(dirname(opts$png))}
 	}
 	ggsave(filename = opts$png, plot=plt)
 
 	## Save to csv.
 	table <- clever_to_table(clev)
-	if(dirname(opts$csv) != '.'){ 
+	if(dirname(opts$csv) != '.'){
 		if(!dir.exists(dirname(opts$csv))){dir.create(dirname(opts$csv))}
 	}
 	write.csv(table, file=opts$csv, row.names=FALSE)
 }
 
 ## Write the JSON file.
-root = clever_to_json(clev, params.plot)
+root <- clever_to_json(clev, params.plot)
 write(toJSON(root), "product.json")
 
 setwd(cwd)

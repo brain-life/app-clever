@@ -15,14 +15,14 @@ vectorize_NIftI = function(bold, mask){
 	return(Dat)
 }
 
-# Creates a new file name from an existing one. Used to avoid duplicate names. 
+# Creates a new file name from an existing one. Used to avoid duplicate names.
 generate_fname = function(existing_fname){
 	last_period_index <- regexpr("\\.[^\\.]*$", existing_fname)
 	if(last_period_index == -1){ warning('Not a file name (no extension).') }
 	extension <- substr(existing_fname, last_period_index, nchar(existing_fname))
 	## If parenthesized number suffix exists...
 	if(substr(existing_fname, last_period_index-1, last_period_index-1) == ')'){
-		in_last_parenthesis <- gsub(paste0('(*\\))', extension), '', 
+		in_last_parenthesis <- gsub(paste0('(*\\))', extension), '',
 			gsub('.*(*\\()', '', existing_fname))
 		n <- suppressWarnings(as.numeric(in_last_parenthesis))
 		if(is.numeric(n)){
@@ -31,7 +31,7 @@ generate_fname = function(existing_fname){
 				np1 <- as.character(n + 1)
 				n <- as.character(n)
 				out <- gsub(
-						paste0( '(\\(', n, '\\))', extension), 
+						paste0( '(\\(', n, '\\))', extension),
 						paste0('\\(', np1, '\\)', extension),
 						existing_fname)
 			}
@@ -45,7 +45,7 @@ generate_fname = function(existing_fname){
 }
 
 # Represents a clever object as a JSON file.
-clever_to_json = function(clev, params.plot){
+clever_to_json = function(clev, params.plot=NULL){
 	choosePCs <- clev$params$choosePCs
 	method <- clev$params$method
 	measure <- switch(method,
@@ -55,29 +55,29 @@ clever_to_json = function(clev, params.plot){
 	outliers <- clev$outliers
 	cutoffs <- clev$cutoffs
 
-	plot1 <- frame()
-	plot1$x <- 1:length(method)
-	plot1$y <- measure
-
 	graph1 <- frame()
 	graph1$layout <- frame()
 	graph1$layout$xaxis <- frame()
 	graph1$layout$yaxis <- frame()
-	graph1$type <- "ggplot"
+	graph1$type <- "plotly"
 
-	graph1$name <- ifelse(!params.plot$main == '', params.plot$main,
-		paste0('Outlier Distribution', 
-			ifelse(sum(out$outliers$outliers) > 0, '', ' (None Identified)')))
+	if(is.null(params.plot)){
+		params.plot=list(main='', xlab='', ylab='')
+	}
 
-	graph1$layout$xaxis$title <- ifelse(!params.plot$xlab == '', params.plot$xlab,
+	graph1$name <- ifelse(params.plot$main != '', params.plot$main,
+		paste0('Outlier Distribution',
+			ifelse(sum(apply(outliers, 2, sum)) > 0, '', ' (None Identified)')))
+
+	graph1$layout$xaxis$title <- ifelse(params.plot$xlab != '', params.plot$xlab,
 		'Index (Time Point)')
 	graph1$layout$xaxis$type <- "linear"
 
-	graph1$layout$yaxis$title <- ifelse(!params.plot$ylab == '', params.plot$ylab,
+	graph1$layout$yaxis$title <- ifelse(params.plot$ylab != '', params.plot$ylab,
 		method)
 	graph1$layout$yaxis$type <- "linear"
 
-	graph1$data <- c(plot1)
+	graph1$data <- list(list(y=round(measure, digits=5)))
 
 	root <- frame()
 	root$brainlife <- list(graph1)
@@ -100,7 +100,7 @@ clever_to_table = function(clev){
 		table <- cbind(table, outliers)
 	}
 	names(table) <- c(
-		paste0(method, '. PCs chosen by ', choosePCs), 
+		paste0(method, '. PCs chosen by ', choosePCs),
 		paste0(names(outliers), ' = ', cutoffs))
 	if(!is.null(clev$in_MCD)){
 		table <- cbind(table, in_MCD=clev$in_MCD)

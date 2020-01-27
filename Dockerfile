@@ -4,7 +4,7 @@ MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
 RUN apt update && apt install -y r-cran-devtools libssl-dev
 
-RUN R -e "devtools::install_github('mandymejia/clever')" #1.2??
+RUN R -e "devtools::install_github('mandymejia/clever')" #1.3
 
 RUN R -e "install.packages('oro.nifti')"
 RUN R -e "install.packages('rjson')"
