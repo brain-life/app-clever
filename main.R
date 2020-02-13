@@ -15,9 +15,13 @@ source('utils.R')
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
 if(input$id_out != ''){ input$id_out <- as.logical(input$id_out) }
-if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') }
+# if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') } #why is this here?
 input[input == ''] <- NULL # Remove unspecified params/options.
-params.clever <- input[names(input) %in% c('choosePCs','method','id_out')]
+input$kurt_quantile_cut <- as.numeric(input$kurt_quantile_cut)
+input$kurt_detrend <- as.logical(input$kurt_detrend)
+input$id_out <- as.logical(input$id_out)
+params.clever <- input[names(input) %in% c('choosePCs', 'kurt_quantile_cut', 'kurt_detrend',
+																					 'method', 'id_out')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
 

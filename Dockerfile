@@ -4,14 +4,14 @@ MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
 RUN apt update && apt install -y r-cran-devtools libssl-dev
 
-RUN R -e "devtools::install_github('mandymejia/clever')" #1.3
+RUN R -e "devtools::install_github('mandymejia/clever')" #1.4
 
 RUN R -e "install.packages('oro.nifti')"
 RUN R -e "install.packages('rjson')"
 RUN R -e "install.packages('clever')"
 RUN R -e "install.packages('ggplot2')"
 
-#to test 
+#to test
 #R -e 'library("clever"); help("clever")'
 
 RUN apt install -y jq
