@@ -12,12 +12,10 @@ vectorize_NIftI = function(bold, mask){
 
 	print(paste0('\t Initializing a matrix of size ', nT, ' by ', nV))
 	Dat <- matrix(NA, nT, nV)
-	print('\tBeginning Loop')
 	for(t in 1:nT){
 	  dat_t <- dat[,,,t]
 	  Dat[t,] <- dat_t[mask==1]
 	}
-	print('\tDone Loop')
 
 	return(Dat)
 }
