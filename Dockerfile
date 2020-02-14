@@ -6,7 +6,7 @@ RUN apt update && apt install -y r-cran-devtools libssl-dev
 
 RUN R -e "devtools::install_github('mandymejia/clever', ref='1.4')"
 
-RUN R -e "install.packages('oro.nifti')"
+RUN R -e "install.packages('Rnifti')"
 RUN R -e "install.packages('rjson')"
 RUN R -e "install.packages('clever')"
 RUN R -e "install.packages('ggplot2')"

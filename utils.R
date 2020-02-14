@@ -4,12 +4,12 @@ vectorize_NIftI = function(bold, mask){
 	print('Using reorient=TRUE (2/14/20)')
 
 	print('Reading mask.')
-	mask <- readNIfTI(mask, verbose=TRUE, warn=1, reorient=TRUE)
+	mask <- RNifti::readNifti(mask)
 	print('Mask dims are:')
 	print(dim(mask))
 
 	print('Reading bold.')
-	dat <- readNIfTI(bold, verbose=TRUE, warn=1, reorient=TRUE)
+	dat <- RNifti::readNifti(bold)
 	print(paste0('Bold dims are:'))
 	print(dim(dat))
 

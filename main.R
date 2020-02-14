@@ -5,7 +5,7 @@
 #lapply(pkg, require, character.only = TRUE)
 #rm(pkg, pkg.new)
 
-library(oro.nifti)
+library(RNifti)
 library(rjson)
 library(clever)
 library(ggplot2)
