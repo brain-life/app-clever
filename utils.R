@@ -1,15 +1,17 @@
 # Represents NIfTI volume timeseries as matrix.
 vectorize_NIftI = function(bold, mask){
 
-	print('Reading bold.')
-	dat <- readNIfTI(bold, verbose=TRUE, warn=1, reorient=FALSE)
-	print(paste0('Bold dims are:'))
-	print(dim(dat))
+	print('Using reorient=TRUE (2/14/20)')
 
 	print('Reading mask.')
-	mask <- readNIfTI(mask, verbose=TRUE, warn=1, reorient=FALSE)
+	mask <- readNIfTI(mask, verbose=TRUE, warn=1, reorient=TRUE)
 	print('Mask dims are:')
 	print(dim(mask))
+
+	print('Reading bold.')
+	dat <- readNIfTI(bold, verbose=TRUE, warn=1, reorient=TRUE)
+	print(paste0('Bold dims are:'))
+	print(dim(dat))
 
 	mask <- 1*(mask > 0)
 	nT <- dim(dat)[4]
