@@ -2,12 +2,12 @@
 vectorize_NIftI = function(bold, mask){
 
 	print('Reading bold.')
-	dat <- readNIfTI(bold, reorient=FALSE)
+	dat <- readNIfTI(bold, verbose=TRUE, warn=1, reorient=FALSE)
 	print(paste0('Bold dims are:'))
 	print(dim(dat))
 
 	print('Reading mask.')
-	mask <- readNIfTI(mask, reorient=FALSE)
+	mask <- readNIfTI(mask, verbose=TRUE, warn=1, reorient=FALSE)
 	print('Mask dims are:')
 	print(dim(mask))
 

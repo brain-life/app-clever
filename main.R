@@ -25,6 +25,8 @@ params.clever <- input[names(input) %in% c('choosePCs', 'kurt_quantile_cut', 'ku
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
 
+print(gc(verbose=TRUE))
+
 # Vectorize data.
 print('vectorizing...')
 Dat <- vectorize_NIftI(input$bold, input$mask)
