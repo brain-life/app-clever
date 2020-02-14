@@ -1,4 +1,4 @@
-FROM r-base:3.5.0
+FROM r-base:3.6.2
 
 MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
