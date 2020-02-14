@@ -1,8 +1,6 @@
 # Represents NIfTI volume timeseries as matrix.
 vectorize_NIftI = function(bold, mask){
 
-	print('Using reorient=TRUE (2/14/20)')
-
 	print('Reading mask.')
 	mask <- RNifti::readNifti(mask)
 	print('Mask dims are:')
