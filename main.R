@@ -73,7 +73,7 @@ if(params.clever$id_out){
 }
 
 ## Write the JSON file.
-root <- clever_to_json(clev, params.plot)
+root <- clever_to_json(clev, params.plot, plt)
 write(toJSON(root), "product.json")
 
 setwd(cwd)

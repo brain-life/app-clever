@@ -113,7 +113,7 @@ generate_fname = function(existing_fname){
 }
 
 # Represents a clever object as a JSON file.
-clever_to_json = function(clev, params.plot=NULL){
+clever_to_json = function(clev, params.plot=NULL, plt){
 	choosePCs <- clev$params$choosePCs
 	method <- clev$params$method
 	measure <- switch(method,
@@ -122,6 +122,15 @@ clever_to_json = function(clev, params.plot=NULL){
 		robdist_subset=clev$robdist)
 	outliers <- clev$outliers
 	cutoffs <- clev$cutoffs
+
+  msg <- frame()
+  msg$type <- "success"
+  msg$msg <- "See clever_results.png for the outlier detection plot."
+
+	img <- frame()
+	img$type <- "image/png"
+	img$name <- "clever result"
+  img$base64 <- toJSON(plt)
 
 	graph1 <- frame()
 	graph1$layout <- frame()
@@ -151,7 +160,7 @@ clever_to_json = function(clev, params.plot=NULL){
 	graph1$data <- list(list(y=round(measure, digits=5)))
 
 	root <- frame()
-	root$brainlife <- list(graph1)
+	root$brainlife <- list(graph1, img)
 	return(root)
 }
 
