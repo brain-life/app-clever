@@ -1,12 +1,5 @@
-# Returns dimensions of a NIfTI file based on its header.
-Nifti_dims = function(fname){
-  x <- readNifti(fname, volumes=1)
-	out <- niftiHeader(x)$dim
-  return(out)
-}
-
 # Represents NIfTI volume timeseries as matrix.
-vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
+vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=50){
 
 	print('Reading mask.')
 	mask <- RNifti::readNifti(mask_fname, internal=FALSE)
@@ -21,6 +14,9 @@ vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 		dat <- RNifti::readNifti(bold_fname, internal=TRUE)
 		print(paste0('Bold dims are:'))
 		print(dim(dat))
+    if(dim(dat)[1:3] != dim(mask)[1:3]){
+      stop('Error: bold and mask dims do not match.')
+    }
 		nT <- dim(dat)[4]
 
 		gc()
@@ -38,10 +34,10 @@ vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 	} else {
 		stop('Chunkwise vectorizing does not work right now.')
 		print('Reading bold in chunks.')
-		bold_dims <- Nifti_dims(bold_fname)
+		bold_dims <- niftiHeader(bold_fname)$dim
 		print(paste0('According to its header, bold dims are:'))
-		print(bold_dims)
-		nT <- bold_dims[4] # WRONG!
+		print(bold_dims[2:5])
+		nT <- bold_dims[5]
 
 		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
 		Dat <- matrix(NA, nT, nV)
@@ -113,7 +109,7 @@ generate_fname = function(existing_fname){
 }
 
 # Represents a clever object as a JSON file.
-clever_to_json = function(clev, params.plot=NULL, plt){
+clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 	choosePCs <- clev$params$choosePCs
 	method <- clev$params$method
 	measure <- switch(method,
@@ -123,44 +119,43 @@ clever_to_json = function(clev, params.plot=NULL, plt){
 	outliers <- clev$outliers
 	cutoffs <- clev$cutoffs
 
-  msg <- frame()
-  msg$type <- "success"
-  msg$msg <- "See clever_results.png for the outlier detection plot."
+	root <- frame()
+	root$brainlife <- list()
 
-	img <- frame()
-	img$type <- "image/png"
-	img$name <- "clever result"
-  img$base64 <- toJSON(plt)
+	if(!is.null(opts.png)){
+		msg <- frame()
+		msg$type <- "success"
+		msg$msg <- "See clever_results.png for the outlier detection plot."
+	}
+	root$brainlife$msg <- msg
+
+	#img <- frame()
+	#img$type <- "image/png"
+	#img$name <- "clever result"
+  #img$base64 <- toJSON(plt) # does not work.
 
 	graph1 <- frame()
 	graph1$layout <- frame()
 	graph1$layout$xaxis <- frame()
 	graph1$layout$yaxis <- frame()
 	graph1$type <- "plotly"
-
 	if(is.null(params.plot)){
 		params.plot=list(main=NULL, xlab=NULL, ylab=NULL)
 	}
-
 	graph1$name <- ifelse(!is.null(params.plot$main),
 		params.plot$main,
 		paste0('Outlier Distribution',
 			ifelse(sum(apply(outliers, 2, sum)) > 0, '', ' (None Identified)')))
-
 	graph1$layout$xaxis$title <- ifelse(!is.null(params.plot$xlab),
 		params.plot$xlab,
 		'Index (Time Point)')
 	graph1$layout$xaxis$type <- "linear"
-
 	graph1$layout$yaxis$title <- ifelse(!is.null(params.plot$ylab),
 		params.plot$ylab,
 		method)
 	graph1$layout$yaxis$type <- "linear"
-
 	graph1$data <- list(list(y=round(measure, digits=5)))
-
-	root <- frame()
-	root$brainlife <- list(graph1, img)
+	root$brainlife$graph1 <- graph1
 	return(root)
 }
 

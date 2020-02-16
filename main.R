@@ -32,9 +32,11 @@ print(gc(verbose=TRUE))
 # Vectorize data.
 print('(1) Vectorizing...')
 Dat <- vectorize_NIftI(input$bold, input$mask)
+if(any(is.na(Dat))){ stop('Error: NA in vectorized volume.') }
 
 print('Garbage collection after vectorizing bold:')
 print(gc(verbose=TRUE))
+priint(paste0('Size of vectorized matrix: ', object.size(Dat, units='Gb')))
 
 # Perform clever.
 print('(2) Performing clever...')
@@ -73,7 +75,7 @@ if(params.clever$id_out){
 }
 
 ## Write the JSON file.
-root <- clever_to_json(clev, params.plot, plt)
+root <- clever_to_json(clev, params.plot, opts$png)
 write(toJSON(root), "product.json")
 
 setwd(cwd)
