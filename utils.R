@@ -1,32 +1,84 @@
+# Returns dimensions of a NIfTI file based on its header.
+Nifti_dims = function(fname){
+  x <- readNifti(fname, volumes=1)
+	out <- niftiHeader(x)$dim
+  return(out)
+}
+
 # Represents NIfTI volume timeseries as matrix.
-vectorize_NIftI = function(bold, mask){
+vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 
 	print('Reading mask.')
-	mask <- RNifti::readNifti(mask)
+	mask <- RNifti::readNifti(mask_fname, internal=FALSE)
 	print('Mask dims are:')
 	print(dim(mask))
-
-	print('Reading bold.')
-	dat <- RNifti::readNifti(bold)
-	print(paste0('Bold dims are:'))
-	print(dim(dat))
-
-	mask <- 1*(mask > 0)
-	nT <- dim(dat)[4]
+	mask <- mask > 0
 	nV <- sum(mask)
+	print(paste0('Mask density is ', round(nV/prod(dim(mask)), 2), '.'))
 
-	print(gc(verbose=TRUE))
+	if(is.null(chunk_size) | (chunk_size < 1)){
+		print('Reading bold.')
+		dat <- RNifti::readNifti(bold_fname, internal=TRUE)
+		print(paste0('Bold dims are:'))
+		print(dim(dat))
+		nT <- dim(dat)[4]
 
-	print(paste0('\t Initializing a matrix of size ', nT, ' by ', nV, '.'))
-	Dat <- matrix(NA, nT, nV)
+		gc()
 
-	print('Beginning mask loop.')
-	for(t in 1:nT){
-	  dat_t <- dat[,,,t]
-	  Dat[t,] <- dat_t[mask==1]
+		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
+		Dat <- matrix(NA, nT, nV)
+
+		print('Beginning mask loop.')
+		for(t in 1:nT){
+		  dat_t <- dat[,,,t]
+		  Dat[t,] <- dat_t[mask]
+		}
+		print('Ended mask loop.')
+
+	} else {
+		stop('Chunkwise vectorizing does not work right now.')
+		print('Reading bold in chunks.')
+		bold_dims <- Nifti_dims(bold_fname)
+		print(paste0('According to its header, bold dims are:'))
+		print(bold_dims)
+		nT <- bold_dims[4] # WRONG!
+
+		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
+		Dat <- matrix(NA, nT, nV)
+
+		print('Beginning mask loop.')
+		chunks <- split(1:nT, ceiling(seq_along(1:nT)/chunk_size))
+		good_brick = 1
+		for(i in 1:length(chunks)){
+			ts = chunks[[i]]
+			print(paste0('Chunk ', i, ':t ', ts[1], ' to ', ts[length(ts)]))
+			dat <- tryCatch(
+				expr = {
+					x <- RNifti::readNifti(bold_fname, volumes=ts)
+					good_brick = ts[1]
+					x
+				},
+				error = {
+					function(e){
+						print(paste0('Warning: This chunk could not be read from t ', ts[1]))
+						print(paste0('So, reading from ', good_brick, ' and taking subset.'))
+						x <- RNifti::readNifti(bold_fname,
+							volumes=good_brick:(ts[length(ts)]))
+						return ( x[,,,ts-good_brick+1] )
+					}
+				}
+			)
+			for(i in 1:length(ts)){
+				t <- ts[i]
+			  dat_t <- dat[,,,i]
+			  Dat[t,] <- dat_t[mask]
+				rm(dat_t)
+			}
+			rm(dat)
+		}
+
+		print('Ended mask loop.')
 	}
-
-	print('Ending mask loop.')
 
 	return(Dat)
 }
@@ -78,18 +130,21 @@ clever_to_json = function(clev, params.plot=NULL){
 	graph1$type <- "plotly"
 
 	if(is.null(params.plot)){
-		params.plot=list(main='', xlab='', ylab='')
+		params.plot=list(main=NULL, xlab=NULL, ylab=NULL)
 	}
 
-	graph1$name <- ifelse(params.plot$main != '', params.plot$main,
+	graph1$name <- ifelse(!is.null(params.plot$main),
+		params.plot$main,
 		paste0('Outlier Distribution',
 			ifelse(sum(apply(outliers, 2, sum)) > 0, '', ' (None Identified)')))
 
-	graph1$layout$xaxis$title <- ifelse(params.plot$xlab != '', params.plot$xlab,
+	graph1$layout$xaxis$title <- ifelse(!is.null(params.plot$xlab),
+		params.plot$xlab,
 		'Index (Time Point)')
 	graph1$layout$xaxis$type <- "linear"
 
-	graph1$layout$yaxis$title <- ifelse(params.plot$ylab != '', params.plot$ylab,
+	graph1$layout$yaxis$title <- ifelse(!is.null(params.plot$ylab),
+		params.plot$ylab,
 		method)
 	graph1$layout$yaxis$type <- "linear"
 

@@ -14,9 +14,9 @@ source('utils.R')
 
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
-if(input$id_out != ''){ input$id_out <- as.logical(input$id_out) }
-# if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') } #why is this here?
-input[input == ''] <- NULL # Remove unspecified params/options.
+input[input == ''] = NULL
+if(!is.null(input$id_out)){ input$id_out <- as.logical(input$id_out) }
+if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') }
 input$kurt_quantile_cut <- as.numeric(input$kurt_quantile_cut)
 input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
@@ -24,28 +24,30 @@ params.clever <- input[names(input) %in% c('choosePCs', 'kurt_quantile_cut', 'ku
 																					 'method', 'id_out')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
+opts <- opts[is.null(opts)]
 
+print('Garbage collection before doing anything:')
 print(gc(verbose=TRUE))
 
 # Vectorize data.
-print('vectorizing...')
+print('(1) Vectorizing...')
 Dat <- vectorize_NIftI(input$bold, input$mask)
 
+print('Garbage collection after vectorizing bold:')
+print(gc(verbose=TRUE))
+
 # Perform clever.
-print('performing clever...')
+print('(2) Performing clever...')
 clev <- do.call(clever, append(list(Dat), params.clever))
 
 # Save results...
-print('saving results...')
+print('(3) Saving results...')
 ## Use default options if unspecified.
 cwd <- getwd()
 if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
 if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
 setwd(opts$out_dir)
-fname <- basename(input$mask)
-for(ext in c('\\.gz$', '\\.nii$', '\\.hdr$', '\\.img$')){
-	fname <- sub(ext, '', fname)
-}
+fname <- 'clever_results'
 
 if(is.null(opts$csv)){ opts$csv <- fname }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
@@ -56,7 +58,7 @@ if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 
 if(params.clever$id_out){
 	## Save to png.
-	plt <- do.call(plot, append(list(clev), params.plot))
+	plt <- do.call(plot, append(list(clev), params.plot[is.null(params.plot)]))
 	if(dirname(opts$png) != '.'){
 		if(!dir.exists(dirname(opts$png))){dir.create(dirname(opts$png))}
 	}
