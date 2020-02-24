@@ -36,7 +36,7 @@ if(any(is.na(Dat))){ stop('Error: NA in vectorized volume.') }
 
 print('Garbage collection after vectorizing bold:')
 print(gc(verbose=TRUE))
-priint(paste0('Size of vectorized matrix: ', object.size(Dat, units='Gb')))
+print(paste0('Size of vectorized matrix: ', object.size(Dat, units='Gb')))
 
 # Perform clever.
 print('(2) Performing clever...')
