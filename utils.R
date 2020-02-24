@@ -1,5 +1,5 @@
 # Represents NIfTI volume timeseries as matrix.
-vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=50){
+vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 
 	print('Reading mask.')
 	mask <- RNifti::readNifti(mask_fname, internal=FALSE)
