@@ -13,9 +13,9 @@ library(plotly)
 library(miscTools)
 #library(listviewer)
 
-source('utils.R')
+print('2-29-20, 6 PM')
 
-print('2-29-20, 5:09 PM')
+source('utils.R')
 
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
@@ -59,10 +59,12 @@ if(any(zero_mad)){
 			"). These will be set to zero for estimation of the covariance.\n", sep=""))
 	}
 }
+mad[mad==0] = 1
 Dat <- Dat/c(mad)
+Dat[zero_mad,] = 0
 
 print('Computing covariance matrix.')
-Dat <- t(Dat) %*% Dat
+Dat <- crossprod(Dat)
 
 # Perform clever.
 print('(2) Performing clever...')
