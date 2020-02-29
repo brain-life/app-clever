@@ -15,7 +15,7 @@ library(miscTools)
 
 source('utils.R')
 
-print('2-29-20, 4:55 PM')
+print('2-29-20, 5:09 PM')
 
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
@@ -44,6 +44,11 @@ rm(input)
 print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
+
+print(dims(Dat))
+print(typeof(Dat))
+print(length(rowMedians(Dat, na.rm=TRUE)))
+print(typeof(rowMedians(Dat, na.rm=TRUE)))
 
 print('Scaling and centering.')
 Dat <- Dat - rowMedians(Dat, na.rm=TRUE)
