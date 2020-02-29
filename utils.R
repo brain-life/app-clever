@@ -14,7 +14,7 @@ vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 		dat <- RNifti::readNifti(bold_fname, internal=TRUE)
 		print(paste0('Bold dims are:'))
 		print(dim(dat))
-    if(dim(dat)[1:3] != dim(mask)[1:3]){
+    if(!all(dim(dat)[1:3] == dim(mask)[1:3])){
       stop('Error: bold and mask dims do not match.')
     }
 		nT <- dim(dat)[4]
