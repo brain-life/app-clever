@@ -45,13 +45,9 @@ print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
 
-print(dim(Dat))
-print(typeof(Dat))
-print(length(rowMedians(Dat, na.rm=TRUE)))
-print(typeof(rowMedians(Dat, na.rm=TRUE)))
 
 print('Scaling and centering.')
-Dat <- Dat - rowMedians(Dat, na.rm=TRUE)
+Dat <- Dat - c(rowMedians(Dat, na.rm=TRUE))
 mad <- 1.4826 * rowMedians(abs(Dat), na.rm=TRUE)
 zero_mad <- mad == 0
 if(any(zero_mad)){
@@ -63,7 +59,7 @@ if(any(zero_mad)){
 			"). These will be set to zero for estimation of the covariance.\n", sep=""))
 	}
 }
-Dat <- Dat/mad
+Dat <- Dat/c(mad)
 
 print('Computing covariance matrix.')
 Dat <- t(Dat) %*% Dat
