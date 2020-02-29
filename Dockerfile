@@ -9,7 +9,7 @@ RUN R -e "devtools::install_github('mandymejia/clever', ref='1.4')"
 RUN R -e "install.packages('RNifti')"
 RUN R -e "install.packages('rjson')"
 RUN R -e "install.packages('clever')"
-RUN R -e "install.packages('ggplot2')"
+RUN R -e "install.packages('plotly')"
 
 #to test
 #R -e 'library("clever"); help("clever")'
