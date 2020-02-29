@@ -155,6 +155,10 @@ clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 		method)
 	graph1$layout$yaxis$type <- "linear"
 	graph1$data <- list(list(y=round(measure, digits=5)))
+
+	graph2 <- plotly_json(plot(clever), jsonedit=FALSE)
+
+
 	root$brainlife$graph1 <- graph1
 	return(root)
 }

@@ -9,6 +9,8 @@ library(RNifti)
 library(rjson)
 library(clever)
 library(ggplot2)
+library(plotly)
+#library(listviewer)
 
 source('utils.R')
 
@@ -35,7 +37,7 @@ Dat <- vectorize_NIftI(input$bold, input$mask)
 if(any(is.na(Dat))){ stop('Error: NA in vectorized volume.') }
 
 print('Garbage collection after vectorizing bold:')
-rm(input$bold, input$mask)
+rm(input)
 print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
