@@ -13,7 +13,7 @@ library(plotly)
 library(miscTools)
 #library(listviewer)
 
-print('2-29-20, 6 PM')
+print('2-29-20, 6:10 PM')
 
 source('utils.R')
 
@@ -45,11 +45,10 @@ print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
 
-
 print('Scaling and centering.')
 Dat <- Dat - c(rowMedians(Dat, na.rm=TRUE))
 mad <- 1.4826 * rowMedians(abs(Dat), na.rm=TRUE)
-zero_mad <- mad == 0
+zero_mad <- mad < 1e-8
 if(any(zero_mad)){
 	if(all(zero_mad)){
 	stop("All voxels are zero-variance.\n")
@@ -58,8 +57,8 @@ if(any(zero_mad)){
 			" zero-variance voxels (out of ", length(zero_mad),
 			"). These will be set to zero for estimation of the covariance.\n", sep=""))
 	}
+	mad[zero_mad] = 1
 }
-mad[mad==0] = 1
 Dat <- Dat/c(mad)
 Dat[zero_mad,] = 0
 
