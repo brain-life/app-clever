@@ -45,7 +45,7 @@ print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
 
-print(dims(Dat))
+print(dim(Dat))
 print(typeof(Dat))
 print(length(rowMedians(Dat, na.rm=TRUE)))
 print(typeof(rowMedians(Dat, na.rm=TRUE)))
