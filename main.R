@@ -15,6 +15,8 @@ library(miscTools)
 
 source('utils.R')
 
+print('2-29-20, 4:30 PM')
+
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
 input[input == ''] = NULL
@@ -56,11 +58,10 @@ if(any(zero_mad)){
 			"). These will be set to zero for estimation of the covariance.\n", sep=""))
 	}
 }
-scale_col <- function(col, v){ return(ifelse(v != 0, col/v, 0)) }
-Dat <- sweep(Dat, 2, mad, scale_col)
+Dat <- t(Dat) - mad
 
 print('Computing covariance matrix.')
-Dat <- (Dat %*% t(Dat))
+Dat <- t(Dat) %*% Dat
 
 # Perform clever.
 print('(2) Performing clever...')
