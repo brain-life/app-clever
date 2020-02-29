@@ -15,7 +15,7 @@ library(miscTools)
 
 source('utils.R')
 
-print('2-29-20, 4:30 PM')
+print('2-29-20, 4:44 PM')
 
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
@@ -46,8 +46,8 @@ print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
 
 print('Scaling and centering.')
-Dat <- sweep(Dat, 2, colMedians(Dat, na.rm=TRUE), '-')
-mad <- 1.4826 * colMedians(abs(Dat), na.rm=TRUE)
+Dat <- Dat - rowMedians(Dat, na.rm=TRUE)
+mad <- 1.4826 * rowMedians(abs(Dat), na.rm=TRUE)
 zero_mad <- mad == 0
 if(any(zero_mad)){
 	if(all(zero_mad)){
@@ -58,7 +58,7 @@ if(any(zero_mad)){
 			"). These will be set to zero for estimation of the covariance.\n", sep=""))
 	}
 }
-Dat <- t(Dat) - mad
+Dat <- Dat/mad
 
 print('Computing covariance matrix.')
 Dat <- t(Dat) %*% Dat
