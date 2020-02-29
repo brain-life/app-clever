@@ -10,6 +10,7 @@ library(rjson)
 library(clever)
 library(ggplot2)
 library(plotly)
+library(miscTools)
 #library(listviewer)
 
 source('utils.R')
@@ -24,12 +25,12 @@ input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
 params.clever <- input[names(input) %in% c('choosePCs', 'kurt_quantile_cut', 'kurt_detrend',
 																					 'method', 'id_out')]
+params.clever$input_covar = TRUE
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
 opts <- opts[is.null(opts)]
 
-print('Garbage collection before doing anything:')
-print(gc(verbose=TRUE))
+gc()
 
 # Vectorize data.
 print('(1) Vectorizing...')
@@ -41,6 +42,25 @@ rm(input)
 print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
+
+print('Scaling and centering.')
+Dat <- sweep(Dat, 2, colMedians(Dat, na.rm=TRUE), '-')
+mad <- 1.4826 * colMedians(abs(Dat), na.rm=TRUE)
+zero_mad <- mad == 0
+if(any(zero_mad)){
+	if(all(zero_mad)){
+	stop("All voxels are zero-variance.\n")
+	} else {
+		warning(cat("Warning: ", sum(zero_mad),
+			" zero-variance voxels (out of ", length(zero_mad),
+			"). These will be set to zero for estimation of the covariance.\n", sep=""))
+	}
+}
+scale_col <- function(col, v){ return(ifelse(v != 0, col/v, 0)) }
+Dat <- sweep(Dat, 2, mad, scale_col)
+
+print('Computing covariance matrix.')
+Dat <- (Dat %*% t(Dat))
 
 # Perform clever.
 print('(2) Performing clever...')

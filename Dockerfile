@@ -10,6 +10,7 @@ RUN R -e "install.packages('RNifti')"
 RUN R -e "install.packages('rjson')"
 RUN R -e "install.packages('clever')"
 RUN R -e "install.packages('plotly')"
+RUN R -e "install.packages('miscTools')"
 
 #to test
 #R -e 'library("clever"); help("clever")'
