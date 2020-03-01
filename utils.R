@@ -21,13 +21,13 @@ vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
 
 		gc()
 
-		print(paste0('Initializing a matrix of size ', nV, ' by ', nT, '.'))
-		Dat <- matrix(NA, nV, nT)
+		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
+		Dat <- matrix(NA, nT, nV)
 
 		print('Beginning mask loop.')
 		for(t in 1:nT){
 		  dat_t <- dat[,,,t]
-		  Dat[,t] <- dat_t[mask]
+		  Dat[t,] <- dat_t[mask]
 		}
 		print('Ended mask loop.')
 
