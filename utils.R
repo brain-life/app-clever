@@ -160,7 +160,7 @@ clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 
 	# switching from graph1 to graph2
 	root$brainlife$graph1 <- graph2
-	root$brainlife$graph2 <- graph1
+	#root$brainlife$graph2 <- graph1
 	return(root)
 }
 
