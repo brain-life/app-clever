@@ -4,13 +4,14 @@ MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
 RUN apt update && apt install -y r-cran-devtools libssl-dev
 
-RUN R -e "devtools::install_github('mandymejia/clever', ref='1.4')"
-
 RUN R -e "install.packages('RNifti')"
 RUN R -e "install.packages('rjson')"
-RUN R -e "install.packages('clever')"
+RUN R -e "install.packages('ggplot2')"
 RUN R -e "install.packages('plotly')"
-RUN R -e "install.packages('miscTools')"
+RUN R -e "install.packages('robustbase')"
+
+RUN R -e "devtools::install_github('mandymejia/clever', ref='1.4')"
+#RUN R -e "install.packages('clever')"
 
 #to test
 #R -e 'library("clever"); help("clever")'

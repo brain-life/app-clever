@@ -1,17 +1,9 @@
-# Load required packages, installing if needed.
-#pkg <- c('oro.nifti', 'rjson', 'clever', 'ggplot2')
-#pkg.new <- pkg[!(pkg %in% installed.packages()[,'Package'])] #or from github?
-#if(length(pkg.new)){ install.packages(pkg.new) }
-#lapply(pkg, require, character.only = TRUE)
-#rm(pkg, pkg.new)
-
 library(RNifti)
 library(rjson)
 library(clever)
 library(ggplot2)
 library(plotly)
-library(miscTools)
-#library(listviewer)
+library(robustbase)
 
 print('2-29-20, 8:20 PM')
 
