@@ -27,7 +27,6 @@ input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
 params.clever <- input[names(input) %in% c('choosePCs', 'kurt_quantile_cut', 'kurt_detrend',
 																					 'method', 'id_out')]
-params.clever$input_covar = TRUE
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
 opts <- opts[is.null(opts)]
@@ -45,25 +44,26 @@ print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
 
-print('Scaling and centering.')
-Dat <- Dat - c(rowMedians(Dat, na.rm=TRUE))
-mad <- 1.4826 * rowMedians(abs(Dat), na.rm=TRUE)
-zero_mad <- mad < 1e-8
-if(any(zero_mad)){
-	if(all(zero_mad)){
-	stop("All voxels are zero-variance.\n")
-	} else {
-		warning(cat("Warning: ", sum(zero_mad),
-			" zero-variance voxels (out of ", length(zero_mad),
-			"). These will be set to zero for estimation of the covariance.\n", sep=""))
-	}
-	mad[zero_mad] = 1
-}
-Dat <- Dat/c(mad)
-Dat[zero_mad,] = 0
+#print('Scaling and centering.')
+#params.clever$input_covar = TRUE
+#Dat <- Dat - c(rowMedians(Dat, na.rm=TRUE))
+#mad <- 1.4826 * rowMedians(abs(Dat), na.rm=TRUE)
+#zero_mad <- mad < 1e-8
+#if(any(zero_mad)){
+#	if(all(zero_mad)){
+#	stop("All voxels are zero-variance.\n")
+#	} else {
+#		warning(cat("Warning: ", sum(zero_mad),
+#			" zero-variance voxels (out of ", length(zero_mad),
+#			"). These will be set to zero for estimation of the covariance.\n", sep=""))
+#	}
+#	mad[zero_mad] <- 1
+#}
+#Dat <- Dat/c(mad)
+#Dat[zero_mad,] <- 0
 
-print('Computing covariance matrix.')
-Dat <- crossprod(Dat)
+#print('Computing covariance matrix.')
+#Dat <- crossprod(Dat)
 
 # Perform clever.
 print('(2) Performing clever...')
