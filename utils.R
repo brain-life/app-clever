@@ -81,7 +81,7 @@ clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 	root$brainlife$msg <- msg
 
 	graph1 <- plotly_json(plot(clev), jsonedit=FALSE)
-	root$brainlife$graph1 <- grpah1
+	root$brainlife$graph1 <- graph1
 
 	return(root)
 }

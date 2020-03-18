@@ -13,7 +13,7 @@ input[input == ''] = NULL
 if(!is.null(input$id_out)){ input$id_out <- as.logical(input$id_out) }
 if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') }
 input$PCA_trend_filtering <- as.logical(input$PCA_trend_filtering)
-input$kurt_quantile_cut <- as.numeric(input$kurt_quantile_cut)
+input$kurt_quantile <- as.numeric(input$kurt_quantile)
 input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
 input$solve_directions <- as.logical(input$solve_directions)
