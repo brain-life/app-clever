@@ -10,7 +10,7 @@ RUN R -e "install.packages('ggplot2')"
 RUN R -e "install.packages('plotly')"
 RUN R -e "install.packages('robustbase')"
 
-RUN R -e "devtools::install_github('mandymejia/clever', ref='1.4')"
+RUN R -e "devtools::install_github('mandymejia/clever', ref='1.5')"
 #RUN R -e "install.packages('clever')"
 
 #to test

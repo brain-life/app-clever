@@ -1,80 +1,34 @@
 # Represents NIfTI volume timeseries as matrix.
-vectorize_NIftI = function(bold_fname, mask_fname, chunk_size=0){
+vectorize_NIftI = function(bold_fname, mask_fname, verbose=TRUE){
 
-	print('Reading mask.')
+	if(verbose){ print('Reading mask.') }
 	mask <- RNifti::readNifti(mask_fname, internal=FALSE)
-	print('Mask dims are:')
+	if(verbose){ print('Mask dims are:') }
 	print(dim(mask))
 	mask <- mask > 0
 	nV <- sum(mask)
-	print(paste0('Mask density is ', round(nV/prod(dim(mask)), 2), '.'))
+	if(verbose){ print(paste0('Mask density is ', round(nV/prod(dim(mask)), 2), '.')) }
 
-	if(is.null(chunk_size) | (chunk_size < 1)){
-		print('Reading bold.')
-		dat <- RNifti::readNifti(bold_fname, internal=TRUE)
-		print(paste0('Bold dims are:'))
-		print(dim(dat))
-    if(!all(dim(dat)[1:3] == dim(mask)[1:3])){
-      stop('Error: bold and mask dims do not match.')
-    }
-		nT <- dim(dat)[4]
+	if(verbose){ print('Reading bold.') }
+	dat <- RNifti::readNifti(bold_fname, internal=TRUE)
+	if(verbose){ print(paste0('Bold dims are:')) }
+	if(verbose){ print(dim(dat)) }
+  if(!all(dim(dat)[1:3] == dim(mask)[1:3])){
+    stop('Error: bold and mask dims do not match.')
+  }
+	nT <- dim(dat)[4]
 
-		gc()
+	gc()
 
-		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
-		Dat <- matrix(NA, nT, nV)
+	if(verbose){ print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.')) }
+	Dat <- matrix(NA, nT, nV)
 
-		print('Beginning mask loop.')
-		for(t in 1:nT){
-		  dat_t <- dat[,,,t]
-		  Dat[t,] <- dat_t[mask]
-		}
-		print('Ended mask loop.')
-
-	} else {
-		stop('Chunkwise vectorizing does not work right now.')
-		print('Reading bold in chunks.')
-		bold_dims <- niftiHeader(bold_fname)$dim
-		print(paste0('According to its header, bold dims are:'))
-		print(bold_dims[2:5])
-		nT <- bold_dims[5]
-
-		print(paste0('Initializing a matrix of size ', nT, ' by ', nV, '.'))
-		Dat <- matrix(NA, nT, nV)
-
-		print('Beginning mask loop.')
-		chunks <- split(1:nT, ceiling(seq_along(1:nT)/chunk_size))
-		good_brick = 1
-		for(i in 1:length(chunks)){
-			ts = chunks[[i]]
-			print(paste0('Chunk ', i, ':t ', ts[1], ' to ', ts[length(ts)]))
-			dat <- tryCatch(
-				expr = {
-					x <- RNifti::readNifti(bold_fname, volumes=ts)
-					good_brick = ts[1]
-					x
-				},
-				error = {
-					function(e){
-						print(paste0('Warning: This chunk could not be read from t ', ts[1]))
-						print(paste0('So, reading from ', good_brick, ' and taking subset.'))
-						x <- RNifti::readNifti(bold_fname,
-							volumes=good_brick:(ts[length(ts)]))
-						return ( x[,,,ts-good_brick+1] )
-					}
-				}
-			)
-			for(i in 1:length(ts)){
-				t <- ts[i]
-			  dat_t <- dat[,,,i]
-			  Dat[t,] <- dat_t[mask]
-				rm(dat_t)
-			}
-			rm(dat)
-		}
-
-		print('Ended mask loop.')
+	if(verbose){ print('Masking...') }
+	for(t in 1:nT){
+	  dat_t <- dat[,,,t]
+	  Dat[t,] <- dat_t[mask]
 	}
+	if(verbose){ print('Finished masking.') }
 
 	return(Dat)
 }
@@ -122,45 +76,13 @@ clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 	root <- frame()
 	root$brainlife <- list()
 
-	if(!is.null(opts.png)){
-		msg <- frame()
-		msg$type <- "success"
-		msg$msg <- "See clever_results.png for the outlier detection plot."
-	}
+	msg <- frame()
+	msg$type <- "Success!"
 	root$brainlife$msg <- msg
 
-	#img <- frame()
-	#img$type <- "image/png"
-	#img$name <- "clever result"
-  #img$base64 <- toJSON(plt) # does not work.
+	graph1 <- plotly_json(plot(clev), jsonedit=FALSE)
+	root$brainlife$graph1 <- grpah1
 
-	graph1 <- frame()
-	graph1$layout <- frame()
-	graph1$layout$xaxis <- frame()
-	graph1$layout$yaxis <- frame()
-	graph1$type <- "plotly"
-	if(is.null(params.plot)){
-		params.plot=list(main=NULL, xlab=NULL, ylab=NULL)
-	}
-	graph1$name <- ifelse(!is.null(params.plot$main),
-		params.plot$main,
-		paste0('Outlier Distribution',
-			ifelse(sum(apply(outliers, 2, sum)) > 0, '', ' (None Identified)')))
-	graph1$layout$xaxis$title <- ifelse(!is.null(params.plot$xlab),
-		params.plot$xlab,
-		'Index (Time Point)')
-	graph1$layout$xaxis$type <- "linear"
-	graph1$layout$yaxis$title <- ifelse(!is.null(params.plot$ylab),
-		params.plot$ylab,
-		method)
-	graph1$layout$yaxis$type <- "linear"
-	graph1$data <- list(list(y=round(measure, digits=5)))
-
-	graph2 <- plotly_json(plot(clev), jsonedit=FALSE)
-
-	# switching from graph1 to graph2
-	root$brainlife$graph1 <- graph2
-	#root$brainlife$graph2 <- graph1
 	return(root)
 }
 

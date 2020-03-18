@@ -1,8 +1,10 @@
 {
     "bold": "testdata/small/bold.nii.gz",
     "mask": "testdata/small/mask.nii.gz",
-    "choose_PCs": "kurtosis",
-    "kurt_quantile_cut": ".9",
+    "PCA_trend_filtering": "TRUE",
+    "choose_PCs": "variance",
+    "PCA_trend_filtering.kwargs": "NULL",
+    "kurt_quantile": ".9",
     "kurt_detrend": "TRUE",
     "method": "leverage",
     "id_out": "TRUE",
