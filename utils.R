@@ -95,7 +95,7 @@ clever_to_table = function(clev){
 		paste0(
 			ifelse(PCA_trend_filtering, 'TF PCs', 'PCs'),
 			' selected by ', choose_PCs,
-			', outliers selected by', choose_PCs, '.'),
+			', outliers selected by ', method, '.'),
 		paste0(names(outliers), ' = ', cutoffs))
 	if(!is.null(clev$in_MCD)){
 		table <- cbind(table, in_MCD=clev$in_MCD)
