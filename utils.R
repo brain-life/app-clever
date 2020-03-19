@@ -76,7 +76,7 @@ clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
 
 # Represents a clever object as a data.frame.
 clever_to_table = function(clev){
-	PCA_trend_filtering <- ifelse(PCA_trend_filtering, 'TF PCs', 'PCs')
+	PCA_trend_filtering <- clev$params$PCA_trend_filtering
 	choose_PCs <- clev$params$choose_PCs
 	method <- clev$params$method
 	PC_indices <- clev$PCs$indices
@@ -93,7 +93,7 @@ clever_to_table = function(clev){
 	}
 	names(table) <- c(
 		paste0(
-			ifelse(clev$params$PCA_trend_filtering, 'TF PCs', 'PCs'),
+			ifelse(PCA_trend_filtering, 'TF PCs', 'PCs'),
 			' selected by ', choose_PCs,
 			', outliers selected by', choose_PCs, '.'),
 		paste0(names(outliers), ' = ', cutoffs))

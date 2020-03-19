@@ -50,10 +50,10 @@ if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
 if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
 setwd(opts$out_dir)
 
-if(is.null(opts$csv)){ opts$csv <- 'cleverPlot' }
+if(is.null(opts$csv)){ opts$csv <- 'cleverTable' }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
 if(file.exists(opts$csv)){ opts$csv <- generate_fname(opts$csv) }
-if(is.null(opts$png)){ opts$png <- 'cleverTable' }
+if(is.null(opts$png)){ opts$png <- 'cleverPlot' }
 if(!endsWith('.png', opts$png)){ opts$png <- paste0(opts$png, '.png') }
 if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 
