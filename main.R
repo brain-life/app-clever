@@ -24,7 +24,6 @@ params.clever <- input[names(input) %in% c(
 	'verbose')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('out_dir','csv','png')]
-opts <- opts[is.null(opts)]
 
 gc()
 
@@ -32,9 +31,9 @@ gc()
 print('(1) Vectorizing...')
 Dat <- vectorize_NIftI(input$bold, input$mask)
 if(any(is.na(Dat))){ stop('Error: NA in vectorized volume.') }
+rm(input)
 
 print('Garbage collection after vectorizing bold:')
-rm(input)
 print(gc(verbose=TRUE))
 print('Size of vectorized matrix:')
 print(object.size(Dat), units='Mb')
@@ -50,12 +49,11 @@ cwd <- getwd()
 if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
 if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
 setwd(opts$out_dir)
-fname <- 'clever_results'
 
-if(is.null(opts$csv)){ opts$csv <- fname }
+if(is.null(opts$csv)){ opts$csv <- 'cleverPlot' }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
 if(file.exists(opts$csv)){ opts$csv <- generate_fname(opts$csv) }
-if(is.null(opts$png)){ opts$png <- fname }
+if(is.null(opts$png)){ opts$png <- 'cleverTable' }
 if(!endsWith('.png', opts$png)){ opts$png <- paste0(opts$png, '.png') }
 if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 

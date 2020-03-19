@@ -1,6 +1,5 @@
 # Represents NIfTI volume timeseries as matrix.
 vectorize_NIftI = function(bold_fname, mask_fname, verbose=TRUE){
-
 	if(verbose){ print('Reading mask.') }
 	mask <- RNifti::readNifti(mask_fname, internal=FALSE)
 	if(verbose){ print('Mask dims are:') }
@@ -40,8 +39,10 @@ generate_fname = function(existing_fname){
 	extension <- substr(existing_fname, last_period_index, nchar(existing_fname))
 	## If parenthesized number suffix exists...
 	if(substr(existing_fname, last_period_index-1, last_period_index-1) == ')'){
-		in_last_parenthesis <- gsub(paste0('(*\\))', extension), '',
+		in_last_parenthesis <- gsub(
+			paste0('(*\\))', extension), '',
 			gsub('.*(*\\()', '', existing_fname))
+
 		n <- suppressWarnings(as.numeric(in_last_parenthesis))
 		if(is.numeric(n)){
 			if(!is.na(n)){
@@ -54,9 +55,10 @@ generate_fname = function(existing_fname){
 						existing_fname)
 			}
 		}
+	} else {
+		## Otherwise, append "(1)".
+		out <- gsub(extension, paste0('(1)', extension), existing_fname)
 	}
-	## Otherwise, append "(1)".
-	out <- gsub(extension, paste0('(1)', extension), existing_fname)
 	## Try again if it still exists.
 	if(file.exists(out)){ return(generate_fname(out)) }
 	return(out)
@@ -64,32 +66,20 @@ generate_fname = function(existing_fname){
 
 # Represents a clever object as a JSON file.
 clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
-	choosePCs <- clev$params$choosePCs
-	method <- clev$params$method
-	measure <- switch(method,
-		leverage=clev$leverage,
-		robdist=clev$robdist,
-		robdist_subset=clev$robdist)
-	outliers <- clev$outliers
-	cutoffs <- clev$cutoffs
-
 	root <- frame()
 	root$brainlife <- list()
-
-	msg <- frame()
-	msg$type <- "Success!"
-	root$brainlife$msg <- msg
-
-	graph1 <- plotly_json(plot(clev), jsonedit=FALSE)
-	root$brainlife$graph1 <- graph1
+	root$brainlife$msg <- list(type='success', msg='Success!')
+	root$brainlife$graph1 <- plotly_json(plot(clev), jsonedit=FALSE)
 
 	return(root)
 }
 
 # Represents a clever object as a data.frame.
 clever_to_table = function(clev){
-	choosePCs <- clev$params$choosePCs
+	PCA_trend_filtering <- ifelse(PCA_trend_filtering, 'TF PCs', 'PCs')
+	choose_PCs <- clev$params$choose_PCs
 	method <- clev$params$method
+	PC_indices <- clev$PCs$indices
 	measure <- switch(method,
 		leverage=clev$leverage,
 		robdist=clev$robdist,
@@ -102,7 +92,10 @@ clever_to_table = function(clev){
 		table <- cbind(table, outliers)
 	}
 	names(table) <- c(
-		paste0(method, '. PCs chosen by ', choosePCs),
+		paste0(
+			ifelse(clev$params$PCA_trend_filtering, 'TF PCs', 'PCs'),
+			' selected by ', choose_PCs,
+			', outliers selected by', choose_PCs, '.'),
 		paste0(names(outliers), ' = ', cutoffs))
 	if(!is.null(clev$in_MCD)){
 		table <- cbind(table, in_MCD=clev$in_MCD)
