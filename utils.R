@@ -66,12 +66,30 @@ generate_fname = function(existing_fname){
 
 # Represents a clever object as a JSON file.
 clever_to_JSON = function(clev){
-	js <- toJSON(list(
+	msg.type <- 'success'
+	msg.msg <- 'clever finished successfully!'
+	if(id_out){
+		out_level.num <- apply(clev$outliers, 1, sum)
+		out_level.max <- max(out_level.num)
+		any_outliers <- out_level.max > 0
+		msg.type <- ifelse(any_outliers, 'warning', 'success')
+		msg.msg <- ifelse(any_outliers,
+			paste0(msg.msg, ' ',
+						 sum(out_level.num == out_level.max),
+						 ' outliers were detected at the ',
+						 colnames(clev$outliers)[out_level.max],
+						 ' outlier level.'),
+			paste0(msg.msg, ' No outliers were detected!')
+		)
+	}
+
+	js <- list(
 		brainlife=list(
-			list(type='success', msg='Success!'),
+			list(type=msg.type, msg=msg.msg),
 			graph1=plotly_json(plot(clev), jsonedit=FALSE)
 		)
-	))
+	)
+	js <- toJSON(js)
 	return(js)
 }
 

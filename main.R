@@ -58,19 +58,22 @@ table <- clever_to_table(clev)
 write.csv(table, file=opts$csv, row.names=FALSE)
 
 # 	Write the plotly JSON file.
-js <- (clever_to_JSON(clev)
-write(js), "product.json")
+js <- clever_to_JSON(clev) 
+write(js, "product.json")
 
+#		Make leverage images.
 if(input$leverage_images > 0){
-	lev_imgs <- leverage_images(clev)
-	#			Format leverage images.
-	mask <- RNifti::readNifti(input$mask, internal=FALSE)
-	lev_imgs$mean <- RNifti::asNifti(
-		Matrix_to_VolumeTimeSeries(lev_imgs$mean, mask),
-		reference=input$mask)
-	lev_imgs$top <- RNifti::asNifti(
-		Matrix_to_VolumeTimeSeries(lev_imgs$top, mask),
-		reference=input$mask)
-	#			Save them.
-	save_lev_imgs(lev_imgs)
+	if(length(lev_imgs$top_dir)) > 1{
+		lev_imgs <- leverage_images(clev)
+		mask <- RNifti::readNifti(input$mask, internal=FALSE)
+		lev_imgs$mean <- RNifti::asNifti(
+			Matrix_to_VolumeTimeSeries(lev_imgs$mean, mask),
+			reference=input$mask)
+		lev_imgs$top <- RNifti::asNifti(
+			Matrix_to_VolumeTimeSeries(lev_imgs$top, mask),
+			reference=input$mask)
+		save_lev_imgs(lev_imgs)
+	} else {
+
+	}
 }
