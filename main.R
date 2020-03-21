@@ -58,7 +58,7 @@ table <- clever_to_table(clev)
 write.csv(table, file=opts$csv, row.names=FALSE)
 
 # 	Write the plotly JSON file.
-js <- clever_to_JSON(clev) 
+js <- clever_to_JSON(clev)
 write(js, "product.json")
 
 #		Make leverage images.
@@ -74,6 +74,11 @@ if(input$leverage_images > 0){
 			reference=input$mask)
 		save_lev_imgs(lev_imgs)
 	} else {
-
+		if(verbose){
+			print(
+				paste0('No leverage images: no outliers detected at the ',
+							 input$leverage_images,
+							 ' outlier level.')
+			)
 	}
 }
