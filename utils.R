@@ -65,13 +65,14 @@ generate_fname = function(existing_fname){
 }
 
 # Represents a clever object as a JSON file.
-clever_to_json = function(clev, params.plot=NULL, opts.png=NULL){
-	root <- frame()
-	root$brainlife <- list()
-	root$brainlife$msg <- list(type='success', msg='Success!')
-	root$brainlife$graph1 <- plotly_json(plot(clev), jsonedit=FALSE)
-
-	return(root)
+clever_to_JSON = function(clev){
+	js <- toJSON(list(
+		brainlife=list(
+			list(type='success', msg='Success!'),
+			graph1=plotly_json(plot(clev), jsonedit=FALSE)
+		)
+	))
+	return(js)
 }
 
 # Represents a clever object as a data.frame.
@@ -101,4 +102,25 @@ clever_to_table = function(clev){
 		table <- cbind(table, in_MCD=clev$in_MCD)
 	}
 	return(table)
+}
+
+save_mat_img <- function(mat, fname){
+	png(fname, width=960, height=as.integer(nrow(mat)/ncol(mat)*960))
+	image(mat, col=hcl.colors(128, 'Grays', rev=TRUE), axes=FALSE, asp=1)
+	dev.off()
+}
+
+save_lev_imgs <- function(lev_imgs, mask, out_dir='images'){
+	# save Nifti files.
+	save(lev_imgs, file='leverage_images.rda')
+
+	# save image files.
+	if(!dir.exists('leverage_images')){ dir.create('leverage_images') }
+	mid <- as.integer(dim(mask) / 2)
+	mid <- c(mid, rep(1, 4-length(mid)))
+	for(i in 1:length(lev_imgs$top_dir)){
+		t <- as.numeric(names(lev_imgs$top_dir))[i]
+		save_mat_img(lev_imgs$mean[,,mid[3],i], paste0('leverage_images/t', t, '_mean.png'))
+		save_mat_img(lev_imgs$top[,,mid[3],i], paste0('leverage_images/t', t, '_top.png'))
+	}
 }

@@ -10,20 +10,19 @@ source('utils.R')
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
 input[input == ''] = NULL
-if(!is.null(input$id_out)){ input$id_out <- as.logical(input$id_out) }
-if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') }
 input$PCA_trend_filtering <- as.logical(input$PCA_trend_filtering)
 input$kurt_quantile <- as.numeric(input$kurt_quantile)
 input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
-input$solve_directions <- as.logical(input$solve_directions)
+input$leverage_images <- as.numeric(input$leverage_images)
+input$solve_directions <- input$leverage_images > -1
 input$verbose <- as.logical(input$verbose)
 params.clever <- input[names(input) %in% c(
 	'PCA_trend_filtering', 'PCA_trend_filtering.kwargs', 'choose_PCs',
 	'kurt_quantile', 'kurt_detrend', 'method', 'id_out', 'solve_directions',
 	'verbose')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
-opts <- input[names(input) %in% c('out_dir','csv','png')]
+opts <- input[names(input) %in% c('csv','png')]
 
 gc()
 
@@ -31,7 +30,6 @@ gc()
 print('(1) Vectorizing...')
 Dat <- vectorize_NIftI(input$bold, input$mask)
 if(any(is.na(Dat))){ stop('Error: NA in vectorized volume.') }
-rm(input)
 
 print('Garbage collection after vectorizing bold:')
 print(gc(verbose=TRUE))
@@ -44,12 +42,6 @@ clev <- do.call(clever, append(list(Dat), params.clever))
 
 # Save results...
 print('(3) Saving results...')
-## Use default options if unspecified.
-cwd <- getwd()
-if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
-if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
-setwd(opts$out_dir)
-
 if(is.null(opts$csv)){ opts$csv <- 'cleverTable' }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
 if(file.exists(opts$csv)){ opts$csv <- generate_fname(opts$csv) }
@@ -57,24 +49,28 @@ if(is.null(opts$png)){ opts$png <- 'cleverPlot' }
 if(!endsWith('.png', opts$png)){ opts$png <- paste0(opts$png, '.png') }
 if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 
-if(params.clever$id_out){
-	## Save to png.
-	plt <- do.call(plot, append(list(clev), params.plot[is.null(params.plot)]))
-	if(dirname(opts$png) != '.'){
-		if(!dir.exists(dirname(opts$png))){dir.create(dirname(opts$png))}
-	}
-	ggsave(filename = opts$png, plot=plt)
+# 	Save to png.
+plt <- do.call(plot, append(list(clev), params.plot[!is.null(params.plot)]))
+ggsave(filename = opts$png, plot=plt)
 
-	## Save to csv.
-	table <- clever_to_table(clev)
-	if(dirname(opts$csv) != '.'){
-		if(!dir.exists(dirname(opts$csv))){dir.create(dirname(opts$csv))}
-	}
-	write.csv(table, file=opts$csv, row.names=FALSE)
+# 	Save to csv.
+table <- clever_to_table(clev)
+write.csv(table, file=opts$csv, row.names=FALSE)
+
+# 	Write the plotly JSON file.
+js <- (clever_to_JSON(clev)
+write(js), "product.json")
+
+if(input$leverage_images > 0){
+	lev_imgs <- leverage_images(clev)
+	#			Format leverage images.
+	mask <- RNifti::readNifti(input$mask, internal=FALSE)
+	lev_imgs$mean <- RNifti::asNifti(
+		Matrix_to_VolumeTimeSeries(lev_imgs$mean, mask),
+		reference=input$mask)
+	lev_imgs$top <- RNifti::asNifti(
+		Matrix_to_VolumeTimeSeries(lev_imgs$top, mask),
+		reference=input$mask)
+	#			Save them.
+	save_lev_imgs(lev_imgs)
 }
-
-## Write the JSON file.
-root <- clever_to_json(clev, params.plot, opts$png)
-write(toJSON(root), "product.json")
-
-setwd(cwd)
