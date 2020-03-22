@@ -74,12 +74,7 @@ if(input$leverage_images > 0){
 			reference=input$mask)
 		save_lev_imgs(lev_imgs)
 	} else {
-		if(verbose){
-			print(
-				paste0('No leverage images: no outliers detected at the ',
-							 input$leverage_images,
-							 ' outlier level.')
-			)
-		}
+			print(paste0('No leverage images: no outliers detected at the ',
+									 input$leverage_images, ' outlier level.'))
 	}
 }
