@@ -63,8 +63,8 @@ write(js, "product.json")
 
 #		Make leverage images.
 if(input$leverage_images > 0){
+	lev_imgs <- leverage_images(clev)
 	if(length(lev_imgs$top_dir) > 1){
-		lev_imgs <- leverage_images(clev)
 		mask <- RNifti::readNifti(input$mask, internal=FALSE)
 		lev_imgs$mean <- RNifti::asNifti(
 			Matrix_to_VolumeTimeSeries(lev_imgs$mean, mask),

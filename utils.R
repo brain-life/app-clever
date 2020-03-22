@@ -84,9 +84,9 @@ clever_to_JSON = function(clev){
 	}
 
 	js <- list(
-		brainlife=list(
-			list(type=msg.type, msg=msg.msg),
-			graph1=plotly_json(plot(clev), jsonedit=FALSE)
+			brainlife=list(
+				list(type=msg.type, msg=msg.msg),
+				graph1=plotly_json(plot(clev), jsonedit=FALSE)
 		)
 	)
 	js <- toJSON(js)
