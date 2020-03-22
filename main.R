@@ -80,5 +80,6 @@ if(input$leverage_images > 0){
 							 input$leverage_images,
 							 ' outlier level.')
 			)
+		}
 	}
 }
