@@ -63,7 +63,7 @@ write(js, "product.json")
 
 #		Make leverage images.
 if(input$leverage_images > 0){
-	if(length(lev_imgs$top_dir)) > 1{
+	if(length(lev_imgs$top_dir) > 1){
 		lev_imgs <- leverage_images(clev)
 		mask <- RNifti::readNifti(input$mask, internal=FALSE)
 		lev_imgs$mean <- RNifti::asNifti(
