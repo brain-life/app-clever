@@ -68,7 +68,7 @@ generate_fname = function(existing_fname){
 clever_to_JSON = function(clev){
 	msg.type <- 'success'
 	msg.msg <- 'clever finished successfully!'
-	if(clev$id_out){
+	if(clev$params$id_out){
 		out_level.num <- apply(clev$outliers, 1, sum)
 		out_level.max <- max(out_level.num)
 		any_outliers <- out_level.max > 0
