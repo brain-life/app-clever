@@ -128,14 +128,13 @@ save_mat_img <- function(mat, fname){
 	dev.off()
 }
 
-save_lev_imgs <- function(lev_imgs, mask, out_dir='leverage_images'){
+save_lev_imgs <- function(lev_imgs, out_dir='leverage_images'){
 	# save Nifti files.
 	save(lev_imgs, file='leverage_images.rda')
 
 	# save image files.
 	if(!dir.exists(out_dir)){ dir.create(out_dir) }
-	mid <- as.integer(dim(mask) / 2)
-	mid <- c(mid, rep(1, 4-length(mid)))
+	mid <- as.integer(dim(lev_imgs$mean) / 2)
 	for(i in 1:length(lev_imgs$top_dir)){
 		t <- as.numeric(names(lev_imgs$top_dir))[i]
 		save_mat_img(lev_imgs$mean[,,mid[3],i], paste0(out_dir, '/t', t, '_mean.png'))
