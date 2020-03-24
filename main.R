@@ -14,11 +14,11 @@ input$PCA_trend_filtering <- as.logical(input$PCA_trend_filtering)
 input$kurt_quantile <- as.numeric(input$kurt_quantile)
 input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
-input$lev_imgs <- as.numeric(input$lev_imgs)
+input$lev_img_lvl <- as.numeric(input$lev_img_lvl)
 input$verbose <- as.logical(input$verbose)
 params.clever <- input[names(input) %in% c(
 	'PCA_trend_filtering', 'PCA_trend_filtering.kwargs', 'choose_PCs',
-	'kurt_quantile', 'kurt_detrend', 'method', 'id_out', 'lev_imgs',
+	'kurt_quantile', 'kurt_detrend', 'method', 'id_out', 'lev_img_lvl',
 	'verbose')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('csv','png')]

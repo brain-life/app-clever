@@ -137,7 +137,11 @@ save_lev_imgs <- function(lev_imgs, out_dir='leverage_images'){
 	mid <- as.integer(dim(lev_imgs$mean) / 2)
 	for(i in 1:length(lev_imgs$top_dir)){
 		t <- as.numeric(names(lev_imgs$top_dir))[i]
-		save_mat_img(lev_imgs$mean[,,mid[3],i], paste0(out_dir, '/t', t, '_mean.png'))
-		save_mat_img(lev_imgs$top[,,mid[3],i], paste0(out_dir, '/t,', t, '_top.png'))
+		for(s in 1:3){
+			save_mat_img(lev_imgs$mean[,,mid[s],i],
+									 paste0(out_dir, '/t', t, '_mean_s', s, '.png'))
+			save_mat_img(lev_imgs$top[,,mid[s],i],
+									 paste0(out_dir, '/t', t, '_top_s', s, '.png'))
+		}
 	}
 }
