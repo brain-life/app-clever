@@ -14,12 +14,11 @@ input$PCA_trend_filtering <- as.logical(input$PCA_trend_filtering)
 input$kurt_quantile <- as.numeric(input$kurt_quantile)
 input$kurt_detrend <- as.logical(input$kurt_detrend)
 input$id_out <- as.logical(input$id_out)
-input$leverage_images <- as.numeric(input$leverage_images)
-input$solve_directions <- input$leverage_images > -1
+input$lev_imgs <- as.numeric(input$lev_imgs)
 input$verbose <- as.logical(input$verbose)
 params.clever <- input[names(input) %in% c(
 	'PCA_trend_filtering', 'PCA_trend_filtering.kwargs', 'choose_PCs',
-	'kurt_quantile', 'kurt_detrend', 'method', 'id_out', 'solve_directions',
+	'kurt_quantile', 'kurt_detrend', 'method', 'id_out', 'lev_imgs',
 	'verbose')]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
 opts <- input[names(input) %in% c('csv','png')]
@@ -62,8 +61,8 @@ js <- clever_to_JSON(clev)
 write(js, "product.json")
 
 #		Make leverage images.
-if(input$leverage_images > 0){
-	lev_imgs <- leverage_images(clev)
+if(input$lev_imgs > 0){
+	lev_imgs <- clev$lev_imgs
 	if(length(lev_imgs$top_dir) > 1){
 		mask <- RNifti::readNifti(input$mask, internal=FALSE)
 		lev_imgs$mean <- RNifti::asNifti(
