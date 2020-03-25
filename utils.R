@@ -76,7 +76,7 @@ clever_to_JSON = function(clev){
 		msg.msg <- ifelse(any_outliers,
 			paste0(msg.msg, ' ',
 						 sum(out_level.num == out_level.max),
-						 ' outliers were detected at the ',
+						 ' outlier(s) were detected at the ',
 						 colnames(clev$outliers)[out_level.max],
 						 ' outlier level.'),
 			paste0(msg.msg, ' No outliers were detected!')
@@ -86,7 +86,7 @@ clever_to_JSON = function(clev){
 	js <- list(
 			brainlife=list(
 				list(type=msg.type, msg=msg.msg),
-				plotly_json(plot(clev), jsonedit=FALSE)
+				fromJSON(plotly_json(plot(clev), jsonedit=FALSE, pretty=FALSE))
 		)
 	)
 	js <- toJSON(js)
