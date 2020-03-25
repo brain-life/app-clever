@@ -88,6 +88,7 @@ clever_to_JSON = function(clev){
       list(type=msg.type, msg=msg.msg),
       c(list(type='plotly', name='clever outlier scores'),
         fromJSON(plotly_json(plot(clev), jsonedit=FALSE, pretty=FALSE))
+       )
     )
   )
   js <- toJSON(js)
