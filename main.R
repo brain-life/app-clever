@@ -61,7 +61,7 @@ js <- clever_to_JSON(clev)
 write(js, "product.json")
 
 #		Make leverage images.
-if(input$lev_imgs > 0){
+if(input$lev_img_lvl > 0){
 	lev_imgs <- clev$lev_imgs
 	if(length(lev_imgs$top_dir) > 1){
 		mask <- RNifti::readNifti(input$mask, internal=FALSE)
