@@ -10,7 +10,7 @@ As input, `clever` takes an fMRI volume `"bold.nii.gz"` and brain mask `"mask.ni
 
 1. Normalize ***Y*** by centering and scaling its columns robustly.
 
-2. Perform PCA on the normalized ***Y*** matrix using the singular value decomposition (SVD) in order to obtain the ***T \times T*** PC score matrix, ***U***.
+2. Perform PCA on the normalized ***Y*** matrix using the singular value decomposition (SVD) in order to obtain the ***T **x** T*** PC score matrix, ***U***.
 
 3. Some PCs are removed from ***U*** to obtain the ***Q*** *x* ***T*** (***Q*** *<* ***T***) matrix, ***U'***. The PCs which are retained are those likley to contain outlier information: PCs with greater-than-average variance, or PCs with both greater-than-average variance and high kurtosis. (The removal of at least one PC is also a theoretical requirement for leverage; additionally, the robust distance method requires ***Q*** to be appropriately small relative to ***T***.)
 
@@ -18,7 +18,7 @@ As input, `clever` takes an fMRI volume `"bold.nii.gz"` and brain mask `"mask.ni
 
 5. The outlyingness measures are thresholded to identify the set of outlying timepoints. 
 
-We also include the DVARS outlier detection method in `clever`. It normalizes the data as explained in step 1 (and not as described in the paper cited above), but otherwise follows the algorithm as described in the paper and implemented in the [MATLAB code](https://github.com/asoroosh/DVARS) provided by its authors.
+We also include the DVARS outlier detection method in `clever`. It normalizes the data as explained in step 1, but otherwise follows the algorithm as described in the [paper (Afyouni and Nichols, 2018)](doi.org/10.1016/j.neuroimage.2017.12.098) and implemented in the [MATLAB code](https://github.com/asoroosh/DVARS) provided by its authors.
 
 ### Authors
 
