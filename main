@@ -6,4 +6,4 @@
 #make the script to fail if any of the commands ran fails.
 set -e
 
-time singularity exec -e docker://brainlife/clever:1.2 Rscript main.R
+time singularity exec -e docker://brainlife/clever:2.0 Rscript main.R
