@@ -1,14 +1,13 @@
-FROM r-base:3.5.0
+FROM r-base:4.0.2
 
 MAINTAINER Soichi Hayashi <hayashis@iu.edu>
 
 RUN apt update && apt install -y r-cran-devtools libssl-dev
 
-RUN R -e "devtools::install_github('mandymejia/clever')" #1.3
+RUN R -e "devtools::install_github('mandymejia/clever')" #2.0
 
 RUN R -e "install.packages('oro.nifti')"
 RUN R -e "install.packages('rjson')"
-RUN R -e "install.packages('clever')"
 RUN R -e "install.packages('ggplot2')"
 
 #to test 

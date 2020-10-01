@@ -1,27 +1,3 @@
-# Represents NIfTI volume timeseries as matrix.
-vectorize_NIftI = function(bold, mask){
-	dat <- readNIfTI(bold, reorient=FALSE)
-	print(dim(dat))
-
-	mask <- readNIfTI(mask, reorient=FALSE)
-	mask <- 1*(mask > 0)
-	nT <- dim(dat)[4]
-	nV <- sum(mask)
-
-	print(gc(verbose=TRUE))
-
-	print(paste0('\t Initializing a matrix of size ', nT, ' by ', nV))
-	Dat <- matrix(NA, nT, nV)
-	print('\tBeginning Loop')
-	for(t in 1:nT){
-	  dat_t <- dat[,,,t]
-	  Dat[t,] <- dat_t[mask==1]
-	}
-	print('\tDone Loop')
-
-	return(Dat)
-}
-
 # Creates a new file name from an existing one. Used to avoid duplicate names.
 generate_fname = function(existing_fname){
 	last_period_index <- regexpr("\\.[^\\.]*$", existing_fname)
@@ -53,64 +29,85 @@ generate_fname = function(existing_fname){
 
 # Represents a clever object as a JSON file.
 clever_to_json = function(clev, params.plot=NULL){
-	choosePCs <- clev$params$choosePCs
-	method <- clev$params$method
-	measure <- switch(method,
-		leverage=clev$leverage,
-		robdist=clev$robdist,
-		robdist_subset=clev$robdist)
-	outliers <- clev$outliers
-	cutoffs <- clev$cutoffs
+	out_meas <- clev$outlier_measures
+	methods <- names(out_meas)
+	outliers <- clev$outlier_flags
+	cutoffs <- clev$outlier_cutoffs
 
-	graph1 <- frame()
-	graph1$layout <- frame()
-	graph1$layout$xaxis <- frame()
-	graph1$layout$yaxis <- frame()
-	graph1$type <- "plotly"
+	graphs <- vector("list", length(methods))
 
-	if(is.null(params.plot)){
-		params.plot=list(main='', xlab='', ylab='')
+	for (ii in 1:length(methods)) {
+		method <- methods[ii]
+		graph[[ii]] <- frame()
+		graph[[ii]]$layout <- frame()
+		graph[[ii]]$layout$xaxis <- frame()
+		graph[[ii]]$layout$yaxis <- frame()
+		graph[[ii]]$type <- "plotly"
+
+		if(is.null(params.plot)){
+			params.plot=list(main='', xlab='', ylab='')
+		}
+
+		graph[[ii]]$name <- ifelse(
+			params.plot$main != '', 
+			arams.plot$main,
+			paste0(
+				'Outlier Distribution',
+				ifelse(
+					sum(apply(outliers[[method]], 2, sum)) > 0, 
+					'', 
+					' (None Identified)'
+				)
+			)
+		)
+
+		graph[[ii]]$layout$xaxis$title <- ifelse(
+			params.plot$xlab != '', 
+			params.plot$xlab,
+			'Index (Time Point)'
+		)
+		graph[[ii]]$layout$xaxis$type <- "linear"
+
+		graph[[ii]]$layout$yaxis$title <- ifelse(
+			params.plot$ylab != '', 
+			params.plot$ylab,
+			method
+		)
+		graph[[ii]]$layout$yaxis$type <- "linear"
+
+		graph[[ii]]$data <- list(list(y=round(out_meas[[method]], digits=5)))	
 	}
 
-	graph1$name <- ifelse(params.plot$main != '', params.plot$main,
-		paste0('Outlier Distribution',
-			ifelse(sum(apply(outliers, 2, sum)) > 0, '', ' (None Identified)')))
-
-	graph1$layout$xaxis$title <- ifelse(params.plot$xlab != '', params.plot$xlab,
-		'Index (Time Point)')
-	graph1$layout$xaxis$type <- "linear"
-
-	graph1$layout$yaxis$title <- ifelse(params.plot$ylab != '', params.plot$ylab,
-		method)
-	graph1$layout$yaxis$type <- "linear"
-
-	graph1$data <- list(list(y=round(measure, digits=5)))
-
 	root <- frame()
-	root$brainlife <- list(graph1)
+	root$brainlife <- graphs
 	return(root)
 }
 
 # Represents a clever object as a data.frame.
 clever_to_table = function(clev){
-	choosePCs <- clev$params$choosePCs
-	method <- clev$params$method
-	measure <- switch(method,
-		leverage=clev$leverage,
-		robdist=clev$robdist,
-		robdist_subset=clev$robdist)
-	outliers <- clev$outliers
-	cutoffs <- clev$cutoffs
+	out_meas <- clev$outlier_measures
+	methods <- names(out_meas)
+	outliers <- clev$outlier_flags
+	cutoffs <- clev$outlier_cutoffs
 
-	table <- data.frame(measure)
+	m_DVARS <- grepl("DVARS", names(out_meas))
+
+	out_meas <- cbind(
+		data.frame(out_meas[!m_DVARS]),
+		rbind(0, data.frame(out_meas[m_DVARS]))
+	)
+	names(out_meas) <- paste0(out_meas, ", Measure")
 	if(!is.null(outliers)){
-		table <- cbind(table, outliers)
+		outliers <- cbind(
+			data.frame(outliers[!m_DVARS]),
+			rbind(0, data.frame(outliers[m_DVARS]))
+		)
+		names(outliers) <- paste0(
+			outliers, " Cutoff: ", 
+			round(unlist(clever.Dat1$outlier_cutoffs), 3)
+		)
+		out_meas <- cbind(out_meas, outliers)
 	}
-	names(table) <- c(
-		paste0(method, '. PCs chosen by ', choosePCs),
-		paste0(names(outliers), ' = ', cutoffs))
-	if(!is.null(clev$in_MCD)){
-		table <- cbind(table, in_MCD=clev$in_MCD)
-	}
-	return(table)
+
+	out_meas
 }

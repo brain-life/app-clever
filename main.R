@@ -1,45 +1,48 @@
-# Load required packages, installing if needed.
-#pkg <- c('oro.nifti', 'rjson', 'clever', 'ggplot2')
-#pkg.new <- pkg[!(pkg %in% installed.packages()[,'Package'])] #or from github?
-#if(length(pkg.new)){ install.packages(pkg.new) }
-#lapply(pkg, require, character.only = TRUE)
-#rm(pkg, pkg.new)
-
 library(oro.nifti)
 library(rjson)
 library(clever)
 library(ggplot2)
+library(cowplot)
+theme_set(theme_cowplot())
 
 source('utils.R')
 
 # Read input from JSON.
 input <- fromJSON(file = 'config.json')
-if(input$id_out != ''){ input$id_out <- as.logical(input$id_out) }
-if(is.na(input$id_out)){ stop('Invalid "id_out" argument.') }
 input[input == ''] <- NULL # Remove unspecified params/options.
-params.clever <- input[names(input) %in% c('choosePCs','method','id_out')]
+params.clever <- c(
+	"projection", "out_meas", "DVARS", "detrend", "kurt_quant",
+	"id_outliers", "lev_cutoff", "rbd_cutoff", "lev_images", "verbose"
+)
+params.clever <- input[names(input) %in% params.clever]
+params.clever["projection"] <- strsplit(params.clever["projection"], ", ")[[1]]
+params.clever["out_meas"] <- strsplit(params.clever["out_meas"], ", ")[[1]]
 params.plot <- input[names(input) %in% c('main','sub','xlab','ylab')]
-opts <- input[names(input) %in% c('out_dir','csv','png')]
+opts <- input[names(input) %in% c('csv','png')]
+opts$out_dir <- getcwd()
 
 # Vectorize data.
-print('vectorizing...')
-Dat <- vectorize_NIftI(input$bold, input$mask)
+cat('vectorizing...\n')
+dat <- readNIfTI(bold, reorient=FALSE)
+stopifnot(length(dim(dat)) == 4)
+cat("NIfTI dimensions:\n")
+print(dim(dat))
+mask <- readNIfTI(mask, reorient=FALSE)
+dat <- t(matrix(dat[mask], ncol=dim(dat)[4]))
 
 # Perform clever.
-print('performing clever...')
-clev <- do.call(clever, append(list(Dat), params.clever))
+cat('performing clever...\n')
+clev <- do.call(clever, append(list(X=dat), params.clever))
 
-# Save results...
-print('saving results...')
+# Save results
+cat('saving results...\n')
 ## Use default options if unspecified.
-cwd <- getwd()
-if(is.null(opts$out_dir)){ opts$out_dir <- cwd }
-if(!dir.exists(opts$out_dir)){dir.create(opts$out_dir)}
-setwd(opts$out_dir)
 fname <- basename(input$mask)
 for(ext in c('\\.gz$', '\\.nii$', '\\.hdr$', '\\.img$')){
 	fname <- sub(ext, '', fname)
 }
+fname <- file.path(opts$out_dir, fname)
+if (!dir.exists(dirname(fname))) { dir.create(dirname(fname)) }
 
 if(is.null(opts$csv)){ opts$csv <- fname }
 if(!endsWith('.csv', opts$csv)){ opts$csv <- paste0(opts$csv, '.csv') }
@@ -51,21 +54,13 @@ if(file.exists(opts$png)){ opts$png <- generate_fname(opts$png) }
 if(params.clever$id_out){
 	## Save to png.
 	plt <- do.call(plot, append(list(clev), params.plot))
-	if(dirname(opts$png) != '.'){
-		if(!dir.exists(dirname(opts$png))){dir.create(dirname(opts$png))}
-	}
 	ggsave(filename = opts$png, plot=plt)
 
 	## Save to csv.
 	table <- clever_to_table(clev)
-	if(dirname(opts$csv) != '.'){
-		if(!dir.exists(dirname(opts$csv))){dir.create(dirname(opts$csv))}
-	}
 	write.csv(table, file=opts$csv, row.names=FALSE)
 }
 
 ## Write the JSON file.
 root <- clever_to_json(clev, params.plot)
 write(toJSON(root), "product.json")
-
-setwd(cwd)
