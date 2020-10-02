@@ -1,8 +1,9 @@
+[![Abcdspec-compliant](https://img.shields.io/badge/ABCD_Spec-v1.1-green.svg)](https://github.com/brain-life/abcd-spec)
+[![brainlife.io/app](https://img.shields.io/badge/brainlife.io-app-green.svg)](https://brainlife.io/app/5b2975d616fe38002748e79a)
+
 # app-clever
 
 `clever` computes principal Components LEVERage (“CLEVER”) and other measures of outlyingness for high-dimensional data such as fMRI data. In BrainLife, it can be used for flagging timepoints which are likely to contain artifacts ("scrubbing") as well as general quality-control of fMRI data.
-
-[![brainlife.io/app](https://img.shields.io/badge/brainlife.io-app-green.svg)](https://brainlife.io/app/5b2975d616fe38002748e79a)
 
 ### How it works
 
